@@ -36,21 +36,17 @@ async function getKnowledgeBase(apiKey: string) {
 
   console.log("Cold Start: Building Knowledge Base...");
 
-  // 1. Generate text chunks from JSON
   const docs = createChunks(context);
 
-  // 2. Initialize Embedding Model
   const embeddingsModel = new GoogleGenerativeAIEmbeddings({
-    modelName: "text-embedding-004", // Low cost, high performance
+    modelName: "text-embedding-004",
     apiKey: apiKey,
   });
 
-  // 3. Embed all chunks in parallel (Batch Request)
   const vectors = await embeddingsModel.embedDocuments(
     docs.map((d) => d.pageContent),
   );
 
-  // 4. Store in memory
   cachedKnowledgeBase = docs.map((doc, i) => ({
     content: doc.pageContent,
     metadata: doc.metadata,
@@ -154,7 +150,6 @@ app.post("/chat", async (c) => {
 
     const knowledgeBase = await getKnowledgeBase(apiKey);
 
-    // Embed the user's question
     const embeddingsModel = new GoogleGenerativeAIEmbeddings({
       modelName: "text-embedding-004",
       apiKey: apiKey,
@@ -168,7 +163,7 @@ app.post("/chat", async (c) => {
         score: cosineSimilarity(queryVector, doc.embedding),
       }))
       .sort((a, b) => b.score - a.score)
-      .slice(0, 5); // Take top 5 most relevant chunks
+      .slice(0, 5);
 
     // Combine chunks into a string
     const retrievedContext = results.map((r) => r.content).join("\n\n---\n\n");
