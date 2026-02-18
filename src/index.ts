@@ -39,7 +39,7 @@ async function getKnowledgeBase(apiKey: string) {
   const docs = createChunks(context);
 
   const embeddingsModel = new GoogleGenerativeAIEmbeddings({
-    modelName: "text-embedding-004",
+    modelName: "gemini-embedding-001",
     apiKey: apiKey,
   });
 
@@ -151,7 +151,7 @@ app.post("/chat", async (c) => {
     const knowledgeBase = await getKnowledgeBase(apiKey);
 
     const embeddingsModel = new GoogleGenerativeAIEmbeddings({
-      modelName: "text-embedding-004",
+      modelName: "gemini-embedding-001",
       apiKey: apiKey,
     });
     const queryVector = await embeddingsModel.embedQuery(lastMessage);
